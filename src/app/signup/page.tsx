@@ -10,6 +10,10 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FixHydration } from '@/components/wrappers/utils/fix-hydration';
+import clsx from 'clsx';
+import { submitSignupForm } from '../api/auth/actions/forms';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 const signupFormSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -21,6 +25,7 @@ export type SignUpFormSchema = z.infer<typeof signupFormSchema>
 
 function Signup() {
 
+  const router = useRouter();  
   const signupForm = useForm<SignUpFormSchema>({
     resolver: zodResolver(signupFormSchema),
     mode: 'onChange',
@@ -35,10 +40,23 @@ function Signup() {
   const fieldErrors = Object.values(errors);
   
   const onFormSubmit = async ({name, email, password}: SignUpFormSchema) => {
+    signupForm.reset();
     if (!name || !email || !password){
         return
     };
+    const res = await submitSignupForm({name, email, password});
+    console.log('After submiting form', res)
+    if (res){
+        signIn('credentials', {
+            ...res,
+            redirect: true,
+            redirectTo: '/'
+        })
+    };
+    signupForm.setError('root', {message: 'Smething went wrong!'})
   };
+
+  const submittingForm = signupForm.formState.isSubmitting;
 
   return (
     <div className="flex justify-center items-center h-dvh ">
@@ -65,7 +83,7 @@ function Signup() {
                     <Input type='email' placeholder='abc@example.com'  {...register('email')}/>    
                     <Input type='password' placeholder='Password'  {...register('password')}/>
 
-                    <Button type='submit'> Sign Up </Button>
+                    <Button type='submit' disabled={submittingForm} className={clsx(submittingForm && 'bg-green-600 text-white')}> { submittingForm ? 'Submitting...' : 'Sign Up'} </Button>
                 </form>
             </CardContent>
 

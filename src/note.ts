@@ -11,7 +11,7 @@
 *      ii) npx auth secret (# this will generate secret key e.g. AUTH_SECRET="<auth-secret-key>")
 * 
 *   [b] # src/auth.ts <!important/>
-*       i) export const {handlers, signIn, signOut, auth} = NextAuth({...})
+*       i) export const {handlers, signIn, siagnOut, auth} = NextAuth({...})
 *       ii) Brief :-
 *           - handlers will be used in api's because it hold GET & POST
 *           - auth will be used as middleware  
@@ -34,5 +34,6 @@
 *       - npx shadcn-ui@latest init
 *       - npx shadcn-ui@latest add Card
 *       - npx shadcn-ui@latest Input
-*       
+*  
+*   If we ever needed to exchange token with other server may be express we can use `authjs.session-token` from cookies     
  */
